@@ -24,7 +24,7 @@ class ZigzagMatrixTraversal:
                 count = self.__first_step_right_up_traversal(count)
                 count = self.__traverse_right_up_diagonal(count)
                 direction = 'left'
-        return MatrixUtil.merge_into_in_arr(self.__matrix)
+        return MatrixUtil.merge_into_arr(self.__matrix)
 
     def __traverse_left_down_diagonal(self, count):
         while self.__within_bounds_for_left_down_traversal():

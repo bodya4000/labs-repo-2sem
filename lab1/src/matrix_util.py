@@ -10,7 +10,7 @@ class MatrixUtil:
         return matrix, value
 
     @staticmethod
-    def merge_into_in_arr(matrix):
+    def merge_into_arr(matrix):
         arr = []
         for sub_arr in matrix:
             for i in range(len(sub_arr)):
