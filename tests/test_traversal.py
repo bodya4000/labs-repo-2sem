@@ -1,4 +1,4 @@
-from lab1.src.zigzag_matrix_traversal import ZigzagMatrixTraversal
+from src.zigzag_matrix_traversal.zigzag_matrix_traversal import ZigzagMatrixTraversal
 import unittest
 
 

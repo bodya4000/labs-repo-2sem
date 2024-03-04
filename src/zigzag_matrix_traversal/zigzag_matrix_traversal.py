@@ -1,5 +1,4 @@
-from lab1.src.matrix_util import MatrixUtil
-
+from src.zigzag_matrix_traversal.matrix_util import MatrixUtil
 
 class ZigzagMatrixTraversal:
     def __init__(self, row_size, column_size):

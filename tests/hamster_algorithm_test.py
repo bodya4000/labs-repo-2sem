@@ -1,4 +1,4 @@
-from lab2.src.hamsters_algorithm import *
+from src.hamsters_algorithm import *
 import unittest
 
 
