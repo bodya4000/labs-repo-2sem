@@ -1,52 +1,45 @@
-import unittest
+def calculate_max_hamsters_count(first: int, last: int, counted_hamsters: [], supply: int, hamsters: []) -> int:
+    mid_index = int((first + last) / 2)
+    neighbours_count = mid_index
+    hamsters_count = neighbours_count + 1
 
-
-def get_hamster_need(hamster, neighbours_count):
-    return hamster[0] + hamster[1] * neighbours_count
-
-
-def get_neighbours_needs(neighbours):
-    if len(neighbours) == 0:
-        return 0
-
-    neighbours_need = 0
-    neighbours_count = len(neighbours) - 1
-    for neighbour in neighbours:
-        current_neighbour_need = get_hamster_need(neighbour, neighbours_count)
-        neighbours_need += current_neighbour_need
-    return neighbours_need
-
-
-def find_count_for_current_hamster(index, hamsters, supply, neighbours=None, places_for_hamsters=0):
-    if index == len(hamsters):
-        return places_for_hamsters
-    if neighbours is None:
-        neighbours = []
-
-    neighbours_need = get_neighbours_needs(neighbours)
-    neighbours_count = len(neighbours)
-
-    current_hamster = hamsters[index]
-    current_hamster_need = get_hamster_need(current_hamster, neighbours_count)
-    need_of_feed = neighbours_need + current_hamster_need
-    if need_of_feed < supply:
-        places_for_hamsters += 1
-        neighbours.append(hamsters[index])
-        return find_count_for_current_hamster(index + 1, hamsters, supply, neighbours, places_for_hamsters)
+    tem_arr = sorted([hamster[0] + hamster[1] * neighbours_count for hamster in hamsters])
+    need_of_food = sum(tem_arr[:mid_index + 1])
+    counted_hamsters[mid_index] = need_of_food
+    if need_of_food == supply:
+        return hamsters_count
+    if need_of_food > supply:
+        last = mid_index - 1
+        return calculate_max_hamsters_count(first, last, counted_hamsters, supply, hamsters)
     else:
-        return places_for_hamsters
+        next_pos = mid_index + 1
+        if counted_hamsters[next_pos] > supply:
+            return hamsters_count
+        first = mid_index + 1
+        return calculate_max_hamsters_count(first, last, counted_hamsters, supply, hamsters)
 
 
-def find_max_count_hamsters_available(supply, hamsters, count_of_hamsters):
-    max_places_for_hamsters = 0
-    hamster_index = 0
+def max_hamsters(supply: int, hamsters: []) -> int:
+    first = 0
+    last = len(hamsters) - 1
+    counted_hamsters = [0] * len(hamsters)
 
-    while hamster_index <= count_of_hamsters - 1:
-        result_count = find_count_for_current_hamster(hamster_index, hamsters, supply)
-        if result_count > max_places_for_hamsters:
-            max_places_for_hamsters = result_count
-        if result_count == count_of_hamsters:
-            return result_count
-        hamster_index += 1
+    max_count = calculate_max_hamsters_count(first, last, counted_hamsters, supply, hamsters)
 
-    return max_places_for_hamsters
+    return max_count
+
+
+s = 1000
+hamsters = [
+    [10000, 1],
+    [1000, 1],
+    [500, 1],
+    [300, 1],
+    [700, 1],
+    [600, 1],
+    [400, 2],
+    [50, 80]
+]
+result = max_hamsters(s, hamsters)
+
+print(result)
