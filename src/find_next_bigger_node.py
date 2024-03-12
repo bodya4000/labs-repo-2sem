@@ -13,14 +13,10 @@ def find_successor(root: BinaryTree, node: BinaryTree) -> BinaryTree:
     if node == node.parent.left:
         return node.parent.value
     if node == node.parent.right:
-        current = node
-        while True:
-            if current == root:
-                return node.value
-            if node.value > current.parent.value:
-                current = current.parent
-            else:
-                return current.parent.value
+        if node.value > node.parent.value:
+            return root
+        else:
+            return node.value
     return node.value
 
 
