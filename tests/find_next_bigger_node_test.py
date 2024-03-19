@@ -34,8 +34,8 @@ class TestNextInOrder(unittest.TestCase):
         #         13
         #       /    \
         #      9      20
-        #     / \    /  \
-        #    3  11  15   42
+        #     / \    /   \
+        #    3  11  15    42
         #           / \   / \
         #          14 17 30 50
         #
