@@ -1,4 +1,4 @@
-from LinkedList import LinkedList
+from src.utills.LinkedList import LinkedList
 
 
 class Queue:

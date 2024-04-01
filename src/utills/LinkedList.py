@@ -1,6 +1,6 @@
 from typing import Any
 
-from Node import Node
+from src.utills.Node import Node
 
 
 class LinkedList:
