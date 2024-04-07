@@ -1,4 +1,5 @@
 import json
+import random
 from enum import Enum
 
 
@@ -38,48 +39,55 @@ class Node:
         }, indent=2)
 
 
-def get_uncle(node):
-    if node.parent == node.parent.parent.left:
-        return node.parent.parent.right
-    return node.parent.parent.left
+def get_uncle(node: Node):
+    parent = node.parent
+    grandparent = parent.parent
+    if parent and grandparent and grandparent.left == parent:
+        return grandparent.right
+    elif parent and grandparent and grandparent.right == parent:
+        return grandparent.left
 
 
-def switch_color(node):
+def switch_color(node: Node):
     if node.color == Color.RED:
         node.color = Color.BLACK
     else:
         node.color = Color.RED
 
 
-def is_triangle_left(node: Node) -> bool:
-    parent = node.parent
-    grand_parent = parent.parent
-    if node == parent.right and parent == grand_parent.left:
-        return True
-    return False
-
-
-def is_triangle_right(node: Node) -> bool:
-    parent = node.parent
-    grand_parent = parent.parent
-    if node == parent.left and parent == grand_parent.right:
-        return True
-    return False
-
-
-def is_straight_line_left(node: Node) -> bool:
+def is_triangle_left_case(node: Node) -> bool:
     parent = node.parent
     grandparent = parent.parent
-    if grandparent.left == parent and parent.left == node:
-        return True
+    if parent and grandparent and grandparent.left == parent and parent.right == node:
+        if parent.color == Color.RED:
+            return True
     return False
 
 
-def is_straight_line_right(node: Node) -> bool:
+def is_triangle_right_case(node: Node) -> bool:
     parent = node.parent
     grandparent = parent.parent
-    if grandparent.right == parent and parent.right == node:
-        return True
+    if parent and grandparent and grandparent.right == parent and parent.left == node:
+        if parent.color == Color.RED:
+            return True
+    return False
+
+
+def is_straight_line_left_case(node: Node) -> bool:
+    parent = node.parent
+    grandparent = parent.parent
+    if parent and grandparent and grandparent.left == parent and parent.left == node:
+        if parent.color == Color.RED:
+            return True
+    return False
+
+
+def is_straight_line_right_case(node: Node) -> bool:
+    parent = node.parent
+    grandparent = parent.parent
+    if parent and grandparent and grandparent.right == parent and parent.right == node:
+        if parent.color == Color.RED:
+            return True
     return False
 
 
@@ -145,60 +153,53 @@ class PriorityQueue:
                 return current, Branch.RIGHT
         return self.__find_parent(node, current.right)
 
-    def __fix_insert(self, current: Node):
-        if current == self.root:
+    def __fix_insert(self, new_node: Node):
+        if new_node == self.root:
             self.root.color = Color.BLACK
             return True
-
+        current = new_node
         while current.parent and current.parent.color == Color.RED:
             uncle = get_uncle(current)
             if uncle and uncle.color == Color.RED:
-                self.handle_case_when_uncle_is_red(current, uncle)
-                current = current.parent.parent
-            else:
-                grandparent = current.parent.parent
-                if is_triangle_left(current):
-                    self.handle_left_triangle_case(current, grandparent)
-                elif is_triangle_right(current):
-                    self.handle_right_triangle_case(current, grandparent)
-                elif is_straight_line_right(current):
-                    self.handle_straight_right_line_case(current, grandparent)
-                elif is_straight_line_left(current):
-                    self.handle_straight_line_left_case(current, grandparent)
+                self.__handle_red_uncle_case(current)
+                current = uncle.parent  # here new current is grandparent because I`ve just marked him as red
+            elif is_straight_line_left_case(current):
+                self.__handle_straight_left_line_case(current)
+            elif is_straight_line_right_case(current):
+                self.__handle_straight_right_line_case(current)
+            elif is_triangle_right_case(current):
+                self.__simplify_to_straight_right_line_case(current)
+                self.__handle_straight_right_line_case(current.right)
+            elif is_triangle_left_case(current):
+                self.__simplify_to_straight_left_line_case(current)
+                self.__handle_straight_left_line_case(current.left)
 
-    def handle_case_when_uncle_is_red(self, current: Node, uncle: Node):
+    def __handle_red_uncle_case(self, current_node: Node):
+        parent = current_node.parent
+        uncle = get_uncle(current_node)
+        switch_color(parent)
         switch_color(uncle)
-        switch_color(uncle.parent)
-        switch_color(current.parent)
+        switch_color(parent.parent)
 
-    def handle_left_triangle_case(self, current, grandparent):
-        self.simplify_to_straight_left_line(current)
-        self.handle_straight_left_line_case(current, grandparent)
-
-    def handle_right_triangle_case(self, current, grandparent):
-        self.simplify_to_straight_right_line(current)
-        self.handle_straight_right_line_case(current, grandparent)
-
-    def handle_straight_line_left_case(self, current, grandparent):
+    def __handle_straight_left_line_case(self, current_node: Node):
+        parent = current_node.parent
+        grandparent = parent.parent
         self.right_rotate(grandparent)
-        switch_color(current.parent)
-        switch_color(current.parent.right)
+        switch_color(parent)
+        switch_color(grandparent)
 
-    def handle_straight_left_line_case(self, current: Node, grandparent: Node):
-        self.right_rotate(grandparent)
-        switch_color(current)
-        switch_color(current.right)
-
-    def simplify_to_straight_right_line(self, current):
-        self.right_rotate(current.parent)
-
-    def simplify_to_straight_left_line(self, current: Node):
-        self.left_rotate(current.parent)
-
-    def handle_straight_right_line_case(self, current: Node, grandparent: Node):
+    def __handle_straight_right_line_case(self, current_node: Node):
+        parent = current_node.parent
+        grandparent = parent.parent
         self.left_rotate(grandparent)
-        switch_color(current)
-        switch_color(current.left)
+        switch_color(parent)
+        switch_color(grandparent)
+
+    def __simplify_to_straight_right_line_case(self, current_node: Node):
+        self.right_rotate(current_node.parent)
+
+    def __simplify_to_straight_left_line_case(self, current_node: Node):
+        self.left_rotate(current_node.parent)
 
     def right_rotate(self, node: Node):
         r"""
@@ -237,21 +238,25 @@ class PriorityQueue:
         """
         if node is None or node.right is None:
             return
+
         x = node
-        y = node.right
+        y = x.right
         t2 = y.left
 
+        # Perform rotation
         y.left = x
         x.right = t2
 
-        if x.parent:
-            if x.parent.left == x:
-                x.parent.left = y
-            else:
-                x.parent.right = y
-        else:
-            self.root = y
+        # Update parent pointers
+        if t2:
+            t2.parent = x
         y.parent = x.parent
+        if x.parent is None:
+            self.root = y
+        elif x.parent.left == x:
+            x.parent.left = y
+        else:
+            x.parent.right = y
         x.parent = y
 
     def pop(self):
@@ -308,14 +313,28 @@ class PriorityQueue:
         return tasks
 
 
+
 if __name__ == '__main__':
     tree = PriorityQueue()
-    tree.insert(1.5, 1)
-    tree.insert(2, 2)
-    tree.insert(3, 2)
-    tree.insert(2, 3)
-    tree.insert(3, 4)
-    tree.insert(4.3, 5)
+    random_nums = [
+        1, 9, 20, 6, 6, 19, 66, 2, 74, 71, 13, 75, 7, 37, 82, 64,
+        45, 43, 9, 46, 8, 18, 16, 90, 12, 19, 68, 84, 62, 20, 73,
+        63, 41, 96, 12, 42, 82, 40, 7, 73, 87, 0, 34, 89, 69, 85,
+        51, 28, 91, 5
+    ]
+
+    random_priorities = [
+        59, 77, 44, 0, 68, 46, 85, 44, 57, 55, 76, 83, 50, 31, 86,
+        14, 9, 9, 51, 76, 99, 45, 73, 38, 45, 13, 68, 33, 85, 36,
+        69, 91, 57, 19, 38, 65, 44, 10, 96, 18, 93, 27, 24, 63, 20,
+        63, 30, 31, 21, 48
+    ]
+    for i in range(50):
+        if i==12:
+            tree.insert(random_nums[i], random_priorities[i])
+        else:
+            tree.insert(random_nums[i], random_priorities[i])
+
+
     print(tree.in_order_traversal(tree.root))
     print(is_red_black_tree_balanced(tree.root))
-
