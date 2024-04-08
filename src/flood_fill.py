@@ -1,6 +1,19 @@
 from enum import Enum
 from src.utills.Queue import Queue
 
+
+def read_file_text_and_convert_into_array(input_file_name):
+    with open(f'../resources/{input_file_name}', 'r', encoding='utf-8') as file:
+        data = file.read()
+        data = data.replace('‘', "'").replace('’', "'")
+        lst = data.replace('\n', '').split(".")
+        data_lists = [item.strip("[]").split(', ') for item in lst[0].split('],[')]
+        data_lists = [[char.strip(" '") for char in sublist] for sublist in data_lists]
+
+    return data_lists
+
+
+
 class Node:
     def __init__(self, x, y):
         self.x = x
