@@ -165,14 +165,18 @@ class PriorityQueue:
                 current = uncle.parent  # here new current is grandparent because I`ve just marked him as red
             elif is_straight_line_left_case(current):
                 self.__handle_straight_left_line_case(current)
+                break
             elif is_straight_line_right_case(current):
                 self.__handle_straight_right_line_case(current)
+                break
             elif is_triangle_right_case(current):
                 self.__simplify_to_straight_right_line_case(current)
                 self.__handle_straight_right_line_case(current.right)
+                break
             elif is_triangle_left_case(current):
                 self.__simplify_to_straight_left_line_case(current)
                 self.__handle_straight_left_line_case(current.left)
+                break
 
     def __handle_red_uncle_case(self, current_node: Node):
         parent = current_node.parent
@@ -203,6 +207,8 @@ class PriorityQueue:
 
     def right_rotate(self, node: Node):
         r"""
+        Perform right rotation on the given node.
+
             y                  x
            / \                / \
           x   t3    =>       t1  y
@@ -211,13 +217,16 @@ class PriorityQueue:
         """
         if node is None or node.left is None:
             return
+
         x = node.left
         y = node
         t2 = x.right
 
+        # Perform rotation
         x.right = y
         y.left = t2
 
+        # Update parent pointers
         if y.parent:
             if y.parent.left == y:
                 y.parent.left = x
@@ -225,8 +234,12 @@ class PriorityQueue:
                 y.parent.right = x
         else:
             self.root = x
+
         x.parent = y.parent
         y.parent = x
+
+        if t2:
+            t2.parent = y
 
     def left_rotate(self, node: Node):
         r"""
@@ -248,8 +261,6 @@ class PriorityQueue:
         x.right = t2
 
         # Update parent pointers
-        if t2:
-            t2.parent = x
         y.parent = x.parent
         if x.parent is None:
             self.root = y
@@ -258,6 +269,8 @@ class PriorityQueue:
         else:
             x.parent.right = y
         x.parent = y
+        if t2 is not None:
+            t2.parent = x
 
     def pop(self):
         being_deleted = self.__find_most_left()
@@ -313,28 +326,14 @@ class PriorityQueue:
         return tasks
 
 
-
 if __name__ == '__main__':
     tree = PriorityQueue()
-    random_nums = [
-        1, 9, 20, 6, 6, 19, 66, 2, 74, 71, 13, 75, 7, 37, 82, 64,
-        45, 43, 9, 46, 8, 18, 16, 90, 12, 19, 68, 84, 62, 20, 73,
-        63, 41, 96, 12, 42, 82, 40, 7, 73, 87, 0, 34, 89, 69, 85,
-        51, 28, 91, 5
-    ]
 
-    random_priorities = [
-        59, 77, 44, 0, 68, 46, 85, 44, 57, 55, 76, 83, 50, 31, 86,
-        14, 9, 9, 51, 76, 99, 45, 73, 38, 45, 13, 68, 33, 85, 36,
-        69, 91, 57, 19, 38, 65, 44, 10, 96, 18, 93, 27, 24, 63, 20,
-        63, 30, 31, 21, 48
-    ]
-    for i in range(50):
-        if i==12:
-            tree.insert(random_nums[i], random_priorities[i])
-        else:
-            tree.insert(random_nums[i], random_priorities[i])
+    i = 0
+    for i in range(300):
+        random_num = random.randint(0, 89)
+        random_priority = random.randint(0,89)
+        tree.insert(random_num, random_priority)
 
 
-    print(tree.in_order_traversal(tree.root))
     print(is_red_black_tree_balanced(tree.root))
