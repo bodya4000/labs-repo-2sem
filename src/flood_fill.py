@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List
 
 from src.utills.Queue import Queue
 
@@ -42,14 +41,16 @@ class Color(Enum):
 def flood_fill(matrix: list[list[str]], y_pos: int, x_pos: int, color: Color) -> int | list[list[str]]:
     if len(matrix) == 0:
         return -1
-    if y_pos <0 or x_pos<0 or x_pos >= len(matrix) or y_pos >= len(matrix):
+    if y_pos < 0 or x_pos < 0 or x_pos >= len(matrix) or y_pos >= len(matrix):
         return -1
     if color not in Color:
         return -1
+    start_color = matrix[y_pos][x_pos]
     new_color = color.value
+    if start_color == new_color:
+        return -1
     queue = Queue()
     painted = set()
-    start_color = matrix[y_pos][x_pos]
     queue.offer(Node(x_pos, y_pos))
     while not queue.is_empty():
         current = queue.poll()

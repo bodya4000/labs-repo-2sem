@@ -31,6 +31,13 @@ class TestZigzag(unittest.TestCase):
         result = flood_fill(input_value, 0, 0, "invalidColot")
         self.assertEqual(result, -1)
 
+    def test_same_color(self):
+        input_value = [['R', 'R', 'R'],
+                       ['R', 'R', 'R'],
+                       ['R', 'R', 'R']]
+        result = flood_fill(input_value, 0, 0, Color.RED)
+        self.assertEqual(result, -1)
+
 
 if __name__ == "__main__":
     unittest.main()
