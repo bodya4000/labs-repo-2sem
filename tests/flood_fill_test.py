@@ -12,6 +12,25 @@ class TestZigzag(unittest.TestCase):
         print(output_value)
         self.assertEqual(output_value, result)
 
+    def test_empty_matrix(self):
+        input_value = []
+        result = flood_fill(input_value, 0, 0, Color.GREY)
+        self.assertEqual(result, -1)
+
+    def test_out_of_bounds_position(self):
+        input_value = [['R', 'R', 'R'],
+                       ['R', 'R', 'R'],
+                       ['R', 'R', 'R']]
+        result = flood_fill(input_value, -1, 0, Color.GREY)
+        self.assertEqual(result, -1)
+
+    def test_invalid_color(self):
+        input_value = [['R', 'R', 'R'],
+                       ['R', 'R', 'R'],
+                       ['R', 'R', 'R']]
+        result = flood_fill(input_value, 0, 0, "invalidColot")
+        self.assertEqual(result, -1)
+
 
 if __name__ == "__main__":
     unittest.main()

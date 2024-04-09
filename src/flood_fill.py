@@ -1,4 +1,6 @@
 from enum import Enum
+from typing import List
+
 from src.utills.Queue import Queue
 
 
@@ -11,7 +13,6 @@ def read_file_text_and_convert_into_array(input_file_name):
         data_lists = [[char.strip(" '") for char in sublist] for sublist in data_lists]
 
     return data_lists
-
 
 
 class Node:
@@ -38,7 +39,13 @@ class Color(Enum):
     GREY = 'C'
 
 
-def flood_fill(matrix: list[list[str]], y_pos: int, x_pos: int, color: Color) -> list[list[str]]:
+def flood_fill(matrix: list[list[str]], y_pos: int, x_pos: int, color: Color) -> int | list[list[str]]:
+    if len(matrix) == 0:
+        return -1
+    if y_pos <0 or x_pos<0 or x_pos >= len(matrix) or y_pos >= len(matrix):
+        return -1
+    if color not in Color:
+        return -1
     new_color = color.value
     queue = Queue()
     painted = set()
