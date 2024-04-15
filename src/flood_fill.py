@@ -4,7 +4,7 @@ from src.utills.Queue import Queue
 
 
 def read_file_text_and_convert_into_array(input_file_name):
-    with open(f'../resources/{input_file_name}', 'r', encoding='utf-8') as file:
+    with open(f'../resources/flood_fill/{input_file_name}', 'r', encoding='utf-8') as file:
         data = file.read()
         data = data.replace('‘', "'").replace('’', "'")
         lst = data.replace('\n', '').split(".")
