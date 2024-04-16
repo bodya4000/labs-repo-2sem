@@ -2,7 +2,7 @@ from src.flood_fill import *
 import unittest
 
 
-class TestZigzag(unittest.TestCase):
+class TestFloodFill(unittest.TestCase):
     def test_given_array_5_on_5(self):
         input_value = read_file_text_and_convert_into_array("input.txt")
         output_value = read_file_text_and_convert_into_array("output.txt")
