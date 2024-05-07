@@ -1,65 +1,50 @@
-class BadParamException(Exception):
-    def __init__(self, message="Bad parameter"):
-        self.message = message
-        super().__init__(self.message)
+from typing import List
 
 
-def find_pattern_index_with_dfa(text: str, pattern: str) -> int:
-    state_table = generate_states(pattern)
-    current_state = [None, None]
-    set_of_pattern_symbol = set(pattern)
-    current_index = 0
-    found_index = -1
-    for index, char in enumerate(text):
-        if char not in set_of_pattern_symbol:
-            continue
-        next_state = get_to_next_state(state_table, current_state)
-        if char == next_state[1]:
-            if next_state == state_table[-1]:
-                found_index = index - len(pattern) + 1
-                break
-            current_state = next_state
+def find_next_state(pattern: str, state: int, letter: str) -> int:
+    if state < len(pattern) and letter == pattern[state]:
+        return state + 1
+
+    current_pattern = pattern[:state] + letter
+    for comparison_length in range(state, 0, -1):
+        prefix = current_pattern[:comparison_length]
+        suffix = current_pattern[-comparison_length:]
+        if prefix == suffix:
+            return comparison_length
+
+    return 0
+
+
+def build_finite_automata(pattern: str) -> List[List[int]]:
+    letters_of_pattern = list(set(pattern))
+    finite_automata = [[0 for _ in letters_of_pattern] for __ in range(len(pattern) + 1)]
+
+    for current_state in range(len(pattern) + 1):
+        for current_letter in range(len(letters_of_pattern)):
+            finite_automata[current_state][current_letter] = find_next_state(pattern, current_state,
+                                                                             letters_of_pattern[current_letter])
+
+    return finite_automata
+
+
+def find_needle(haystack: str, needle: str) -> List[int]:
+    finite_automata = build_finite_automata(needle)
+    letters_of_pattern = list(set(needle))
+
+    found_occurrences = []
+    state = 0
+    for i in range(len(haystack)):
+        if haystack[i] in needle:
+            index = letters_of_pattern.index(haystack[i])
+            state = finite_automata[state][index]
+            if state == len(needle):
+                if len(found_occurrences) == 0 or found_occurrences[-1] + len(needle) <= i - len(needle) + 1:
+                    found_occurrences.append(i - len(needle) + 1)
         else:
-            if current_state != state_table[0]:
-                current_state = [None, None]
+            state = 0
 
-    return found_index
-
-
-def get_to_next_state(state_table: list, current_state):
-    if current_state in state_table:
-        index_of_current_state = state_table.index(current_state)
-        if index_of_current_state + 1 < len(state_table):
-            return state_table[index_of_current_state + 1]
-        else:
-            return BadParamException("Max state")
-    else:
-        raise BadParamException()
+    return -1 if len(found_occurrences) == 0 else found_occurrences
 
 
-def get_to_prev_state(state_table: list, current_state):
-    if current_state in state_table:
-        index_of_current_state = state_table.index(current_state)
-        if index_of_current_state - 1 >= 0:
-            return state_table[index_of_current_state - 1]
-        else:
-            raise BadParamException("Min state")
-    else:
-        raise BadParamException("Invalid current state")
-
-
-def generate_states(pattern: str) -> list:
-    patterns = [[None, None]]
-    current_symbol = None
-    for char in pattern:
-        pattern = [current_symbol, char]
-        patterns.append(pattern)
-        if current_symbol is None:
-            current_symbol = char
-        else:
-            current_symbol += char
-    return patterns
-
-
-states = (generate_states("BLA"))
-print(find_pattern_index_with_dfa("hello", "ello"))
+print(build_finite_automata("co"))
+print(find_needle("crocoocokk", "co"))
