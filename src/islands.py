@@ -1,5 +1,5 @@
-import heapq
 import math
+
 
 def read_csv_and_return_matrix(input_file: str) -> list[list[int]]:
     """
@@ -32,24 +32,6 @@ def warshall(adjacency_matrix: list[list[int]]) -> int:
                 if k == num_islands - 1:
                     total_length += current_path
     return total_length
-
-
-def iter_current_row(current_row, matrix, priority_queue, visited):
-    """
-    iterates in row of matrix
-    and adds all nodes in it to priority queue
-    """
-    for i in range(len(matrix)):
-        if vertex_has_not_path_or_not_in_visited(current_row, i, matrix, visited):
-            priority_queue.push(i, matrix[current_row][i])
-
-
-def vertex_has_not_path_or_not_in_visited(current_row, i, matrix, visited):
-    """
-    check if current node is not in visited
-    :returns bool
-    """
-    return matrix[current_row][i] != 0 and i not in visited
 
 
 if __name__ == '__main__':
